@@ -1,4 +1,4 @@
-import { Car, ParkingLot } from '../js/parkingLot';
+import { Car, ParkingLot, ParkingBoy } from '../js/parkingLot';
 
 describe('Parking Lot', () => {
   it('should successfully park the car when there is available space in the parking lot', () => {
@@ -81,5 +81,89 @@ describe('Parking Lot', () => {
     const pickedCar = parkingLot.pick('InvalidTicket');
 
     expect(pickedCar).toBe(false);
+  });
+
+  it('should park the car to the parking lot by the boy when there is only one parking lot', () => {
+    const parkingLot = new ParkingLot(10);
+    const parkingBoy = new ParkingBoy([parkingLot]);
+    const car = new Car('京A 11111');
+
+    parkingBoy.park(car);
+
+    expect(parkingLot.getAvailableSpace()).toBe(9);
+  });
+
+  it('should not park the car to the parking lot by the boy when the parking lot is full', () => {
+    const parkingLot = new ParkingLot(0);
+    const parkingBoy = new ParkingBoy([parkingLot]);
+    const car = new Car('京A 11111');
+
+    const parkingTicket = parkingBoy.park(car);
+
+    expect(parkingTicket).toBe(false);
+  });
+
+  it('should park the car to the parking lot with second higher priority by the boy when the first one is full', () => {
+    const parkingLot1 = new ParkingLot(1);
+    const parkingLot2 = new ParkingLot(10);
+    const parkingBoy = new ParkingBoy([parkingLot1, parkingLot2]);
+    const car1 = new Car('京A 111111');
+    const car2 = new Car('京A 111112');
+
+    parkingBoy.park(car1);
+    parkingBoy.park(car2);
+
+    expect(parkingLot1.getAvailableSpace()).toBe(0);
+    expect(parkingLot2.getAvailableSpace()).toBe(9);
+  });
+
+  it('should park the car to the parking lot with higher priority by the boy when there are multiple parking lot', () => {
+    const parkingLot1 = new ParkingLot(10);
+    const parkingLot2 = new ParkingLot(10);
+    const parkingBoy = new ParkingBoy([parkingLot1, parkingLot2]);
+    const car = new Car('京A 111111');
+
+    parkingBoy.park(car);
+
+    expect(parkingLot1.getAvailableSpace()).toBe(9);
+    expect(parkingLot2.getAvailableSpace()).toBe(10);
+  });
+
+  it ('should pick the car from the parking lot by the boy when there is a valid ticket', () => {
+    const parkingLot = new ParkingLot(10);
+    const parkingBoy = new ParkingBoy([parkingLot]);
+    const car = new Car('京A 111111');
+
+    const parkingTicket = parkingBoy.park(car);
+
+    const pickerCar = parkingBoy.pick(parkingTicket);
+
+    expect(pickerCar).toEqual(car);
+  });
+
+  it ('should pick the car from the corresponding parking lot by the boy when there is a valid ticket', () => {
+    const parkingLot1 = new ParkingLot(0);
+    const parkingLot2 = new ParkingLot(10);
+    const parkingBoy = new ParkingBoy([parkingLot1, parkingLot2]);
+    const car = new Car('京A 111111');
+
+    const parkingTicket = parkingBoy.park(car);
+
+    const pickerCar = parkingBoy.pick(parkingTicket);
+
+    expect(pickerCar).toEqual(car);
+  });
+
+  it ('should not pick the car by the boy when there is a invalid ticket', () => {
+    const parkingLot1 = new ParkingLot(0);
+    const parkingLot2 = new ParkingLot(10);
+    const parkingBoy = new ParkingBoy([parkingLot1, parkingLot2]);
+    const car = new Car('京A 111111');
+
+    parkingBoy.park(car);
+
+    const pickerCar = parkingBoy.pick('invalidParkingTicket');
+
+    expect(pickerCar).toBe(false);
   });
 });

@@ -35,3 +35,28 @@ export class Car {
   }
 }
 
+export class ParkingBoy {
+  constructor(parkingLots) {
+    this.parkingLots = parkingLots;
+  }
+
+  park(car) {
+    const firstAvailableParkingLot = this.parkingLots.find(parkingLot => parkingLot.getAvailableSpace() > 0);
+    if (!firstAvailableParkingLot) {
+      return false;
+    }
+    return firstAvailableParkingLot.park(car);
+  }
+
+  pick(parkingTicket) {
+    let car;
+    this.parkingLots.forEach(parkingLot => {
+      car = parkingLot.pick(parkingTicket);
+      if (car) {
+        return car;
+      }
+    });
+    return car;
+  }
+}
+
