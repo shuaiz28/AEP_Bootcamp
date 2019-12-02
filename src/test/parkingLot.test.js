@@ -1,4 +1,4 @@
-import { Car, ParkingLot, ParkingBoy, SmartParkingBoy } from '../js/parkingLot';
+import { Car, ParkingLot, ParkingBoy, SmartParkingBoy, ParkingLotFullError, NoAvailableParkingLotError } from '../js/parkingLot';
 
 describe('Parking Lot', () => {
   it('should successfully park the car when there is available space in the parking lot', () => {
@@ -51,9 +51,7 @@ describe('Parking Lot', () => {
     const parkingLot = new ParkingLot(0);
     const car = new Car('京A 11111');
 
-    const parkingTicket = parkingLot.park(car);
-
-    expect(parkingTicket).toBeFalsy();
+    expect(() => parkingLot.park(car)).toThrow(ParkingLotFullError);
   });
   it('should successfully pick the car when there is a valid parking ticket', () => {
     const parkingLot = new ParkingLot(1);
@@ -82,7 +80,9 @@ describe('Parking Lot', () => {
 
     expect(pickedCar).toBe(false);
   });
+});
 
+describe('Parking boy', () => {
   it('should park the car to the parking lot by the boy when there is only one parking lot', () => {
     const parkingLot = new ParkingLot(10);
     const parkingBoy = new ParkingBoy([parkingLot]);
@@ -98,9 +98,7 @@ describe('Parking Lot', () => {
     const parkingBoy = new ParkingBoy([parkingLot]);
     const car = new Car('京A 11111');
 
-    const parkingTicket = parkingBoy.park(car);
-
-    expect(parkingTicket).toBe(false);
+    expect(() => parkingBoy.park(car)).toThrow(NoAvailableParkingLotError);
   });
 
   it('should park the car to the parking lot with second higher priority by the boy when the first one is full', () => {
@@ -168,10 +166,6 @@ describe('Parking Lot', () => {
   });
 });
 
-
-
-
-
 describe('Smart boy', () => {
   it('should park the car to the parking lot by the boy when there is only one parking lot', () => {
     const parkingLot = new ParkingLot(10);
@@ -188,9 +182,7 @@ describe('Smart boy', () => {
     const smartParkingBoy = new SmartParkingBoy([parkingLot]);
     const car = new Car();
 
-    const parkingTicket = smartParkingBoy.park(car);
-
-    expect(parkingTicket).toBe(false);
+    expect(() => smartParkingBoy.park(car)).toThrow(NoAvailableParkingLotError);
   });
 
   it('should park the car to the parking lot with second higher priority by the boy when the first one is full', () => {

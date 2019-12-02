@@ -1,3 +1,7 @@
+export class ParkingLotFullError extends Error {}
+
+export class NoAvailableParkingLotError extends Error {}
+
 export class ParkingLot {
   constructor(size) {
     this.size = size;
@@ -7,7 +11,7 @@ export class ParkingLot {
 
   park(car) {
     if (this.getAvailableSpace() <= 0) {
-      return false;
+      throw new ParkingLotFullError();
     }
     const currentTicketNumber = this.nextTicketNumber;
     this.lotToCarMap.set(currentTicketNumber, car);
@@ -43,7 +47,7 @@ export class ParkingBoy {
   park(car) {
     const firstAvailableParkingLot = this.parkingLots.find(parkingLot => parkingLot.getAvailableSpace() > 0);
     if (!firstAvailableParkingLot) {
-      return false;
+      throw new NoAvailableParkingLotError();
     }
     return firstAvailableParkingLot.park(car);
   }
@@ -78,7 +82,9 @@ export class SmartParkingBoy extends ParkingBoy {
         }
       }
     });
-    if (!maxAvaliableSpaceParkingLot) return false;
+    if (!maxAvaliableSpaceParkingLot) {
+      throw new NoAvailableParkingLotError();
+    }
     const higherPriorityParkingLot = this.parkingLots[maxAvaliableSpaceParkingLot.index];
     return higherPriorityParkingLot.park(car);
   }
