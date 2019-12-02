@@ -2,6 +2,8 @@ export class ParkingLotFullError extends Error {}
 
 export class NoAvailableParkingLotError extends Error {}
 
+export class InvalidParkingTicketError extends Error {}
+
 export class ParkingLot {
   constructor(size) {
     this.size = size;
@@ -22,7 +24,7 @@ export class ParkingLot {
   pick(parkingTicket) {
     const car = this.lotToCarMap.get(parkingTicket);
     if (!car) {
-      return false;
+      throw new InvalidParkingTicketError();
     }
     this.lotToCarMap.delete(parkingTicket);
     return car;
@@ -54,12 +56,15 @@ export class ParkingBoy {
 
   pick(parkingTicket) {
     let car;
-    this.parkingLots.forEach(parkingLot => {
-      car = parkingLot.pick(parkingTicket);
+    this.parkingLots.some(parkingLot => {
+      car = parkingLot.lotToCarMap.get(parkingTicket);
       if (car) {
         return car;
       }
     });
+    if (!car) {
+      throw new InvalidParkingTicketError();
+    }
     return car;
   }
 }

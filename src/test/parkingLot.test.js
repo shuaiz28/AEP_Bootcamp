@@ -1,4 +1,4 @@
-import { Car, ParkingLot, ParkingBoy, SmartParkingBoy, ParkingLotFullError, NoAvailableParkingLotError } from '../js/parkingLot';
+import { Car, ParkingLot, ParkingBoy, SmartParkingBoy, ParkingLotFullError, NoAvailableParkingLotError, InvalidParkingTicketError } from '../js/parkingLot';
 
 describe('Parking Lot', () => {
   it('should successfully park the car when there is available space in the parking lot', () => {
@@ -76,9 +76,7 @@ describe('Parking Lot', () => {
     const car = new Car('京A 11111');
     parkingLot.park(car);
 
-    const pickedCar = parkingLot.pick('InvalidTicket');
-
-    expect(pickedCar).toBe(false);
+    expect(() => parkingLot.pick('InvalidTicket')).toThrow(InvalidParkingTicketError);
   });
 });
 
@@ -157,12 +155,9 @@ describe('Parking boy', () => {
     const parkingLot2 = new ParkingLot(10);
     const parkingBoy = new ParkingBoy([parkingLot1, parkingLot2]);
     const car = new Car('京A 111111');
-
     parkingBoy.park(car);
 
-    const pickerCar = parkingBoy.pick('invalidParkingTicket');
-
-    expect(pickerCar).toBe(false);
+    expect(() => parkingBoy.pick('invalidParkingTicket')).toThrow(InvalidParkingTicketError);
   });
 });
 
@@ -241,12 +236,9 @@ describe('Smart boy', () => {
     const parkingLot2 = new ParkingLot(10);
     const smartParkingBoy = new SmartParkingBoy([parkingLot1, parkingLot2]);
     const car = new Car();
-
     smartParkingBoy.park(car);
 
-    const pickerCar = smartParkingBoy.pick('invalidParkingTicket');
-
-    expect(pickerCar).toBe(false);
+    expect(() => smartParkingBoy.pick('invalidParkingTicket')).toThrow(InvalidParkingTicketError);
   });
 
   it('should park the car to the parking lot with more available spaces when there are multiple parking lot', () => {
