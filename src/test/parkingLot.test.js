@@ -1,4 +1,4 @@
-import { Car, ParkingLot, ParkingBoy } from '../js/parkingLot';
+import { Car, ParkingLot, ParkingBoy, SmartParkingBoy } from '../js/parkingLot';
 
 describe('Parking Lot', () => {
   it('should successfully park the car when there is available space in the parking lot', () => {
@@ -165,5 +165,121 @@ describe('Parking Lot', () => {
     const pickerCar = parkingBoy.pick('invalidParkingTicket');
 
     expect(pickerCar).toBe(false);
+  });
+});
+
+
+
+
+
+describe('Smart boy', () => {
+  it('should park the car to the parking lot by the boy when there is only one parking lot', () => {
+    const parkingLot = new ParkingLot(10);
+    const smartParkingBoy = new SmartParkingBoy([parkingLot]);
+    const car = new Car();
+
+    smartParkingBoy.park(car);
+
+    expect(parkingLot.getAvailableSpace()).toBe(9);
+  });
+
+  it('should not park the car to the parking lot by the boy when the parking lot is full', () => {
+    const parkingLot = new ParkingLot(0);
+    const smartParkingBoy = new SmartParkingBoy([parkingLot]);
+    const car = new Car();
+
+    const parkingTicket = smartParkingBoy.park(car);
+
+    expect(parkingTicket).toBe(false);
+  });
+
+  it('should park the car to the parking lot with second higher priority by the boy when the first one is full', () => {
+    const parkingLot1 = new ParkingLot(1);
+    const parkingLot2 = new ParkingLot(1);
+    const smartParkingBoy = new SmartParkingBoy([parkingLot1, parkingLot2]);
+    const car1 = new Car();
+    const car2 = new Car();
+
+    smartParkingBoy.park(car1);
+    expect(parkingLot1.getAvailableSpace()).toBe(0);
+    smartParkingBoy.park(car2);
+
+    expect(parkingLot2.getAvailableSpace()).toBe(0);
+  });
+
+  it('should park the car to the parking lot with higher priority by the boy when there are multiple parking lot', () => {
+    const parkingLot1 = new ParkingLot(10);
+    const parkingLot2 = new ParkingLot(10);
+    const smartParkingBoy = new SmartParkingBoy([parkingLot1, parkingLot2]);
+    const car = new Car();
+
+    smartParkingBoy.park(car);
+
+    expect(parkingLot1.getAvailableSpace()).toBe(9);
+    expect(parkingLot2.getAvailableSpace()).toBe(10);
+  });
+
+  it ('should pick the car from the parking lot by the boy when there is a valid ticket', () => {
+    const parkingLot = new ParkingLot(10);
+    const smartParkingBoy = new SmartParkingBoy([parkingLot]);
+    const car = new Car();
+
+    const parkingTicket = smartParkingBoy.park(car);
+
+    const pickerCar = smartParkingBoy.pick(parkingTicket);
+
+    expect(pickerCar).toEqual(car);
+  });
+
+  it ('should pick the car from the corresponding parking lot by the boy when there is a valid ticket', () => {
+    const parkingLot1 = new ParkingLot(0);
+    const parkingLot2 = new ParkingLot(10);
+    const smartParkingBoy = new SmartParkingBoy([parkingLot1, parkingLot2]);
+    const car = new Car();
+
+    const parkingTicket = smartParkingBoy.park(car);
+
+    const pickerCar = smartParkingBoy.pick(parkingTicket);
+
+    expect(pickerCar).toEqual(car);
+  });
+
+  it ('should not pick the car by the boy when there is a invalid ticket', () => {
+    const parkingLot1 = new ParkingLot(0);
+    const parkingLot2 = new ParkingLot(10);
+    const smartParkingBoy = new SmartParkingBoy([parkingLot1, parkingLot2]);
+    const car = new Car();
+
+    smartParkingBoy.park(car);
+
+    const pickerCar = smartParkingBoy.pick('invalidParkingTicket');
+
+    expect(pickerCar).toBe(false);
+  });
+
+  it('should park the car to the parking lot with more available spaces when there are multiple parking lot', () => {
+    const parkingLot1 = new ParkingLot(5);
+    const parkingLot2 = new ParkingLot(10);
+    const smartParkingBoy = new SmartParkingBoy([parkingLot1, parkingLot2]);
+    const car = new Car();
+
+    smartParkingBoy.park(car);
+
+    expect(parkingLot1.getAvailableSpace()).toBe(5);
+    expect(parkingLot2.getAvailableSpace()).toBe(9);
+  });
+
+  it('should park the car to the parking lot with highest priority when there are multiple parking lot with the same available spaces', () => {
+    const parkingLot1 = new ParkingLot(10);
+    const parkingLot2 = new ParkingLot(10);
+    const parkingLot3 = new ParkingLot(10);
+    const smartParkingBoy = new SmartParkingBoy([parkingLot1, parkingLot2, parkingLot3]);
+    const car = new Car();
+
+    smartParkingBoy.park(car);
+
+    expect(parkingLot1.getAvailableSpace()).toBe(9);
+    expect(parkingLot2.getAvailableSpace()).toBe(10);
+    expect(parkingLot3.getAvailableSpace()).toBe(10);
   });
 });

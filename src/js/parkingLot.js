@@ -60,3 +60,26 @@ export class ParkingBoy {
   }
 }
 
+export class SmartParkingBoy extends ParkingBoy {
+  constructor(parkingLots) {
+    super(parkingLots);
+  }
+
+  park(car) {
+    let maxAvaliableSpaceParkingLot = null;
+
+    this.parkingLots.forEach((parkingLot, index) => {
+      const availableSpace = parkingLot.getAvailableSpace();
+      if (availableSpace > 0
+        && (!maxAvaliableSpaceParkingLot || availableSpace > maxAvaliableSpaceParkingLot.availableSpace)) {
+        maxAvaliableSpaceParkingLot = {
+          index,
+          availableSpace,
+        }
+      }
+    });
+    if (!maxAvaliableSpaceParkingLot) return false;
+    const higherPriorityParkingLot = this.parkingLots[maxAvaliableSpaceParkingLot.index];
+    return higherPriorityParkingLot.park(car);
+  }
+}
